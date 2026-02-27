@@ -38,7 +38,7 @@ grep 'groupCount' logs/nanoclaw.log | tail -3
 
 ```bash
 # Check for concurrent CLI processes in session debug logs
-ls -la data/sessions/<group>/.claude/debug/
+ls -la data/sessions/<group>/.opencode/
 
 # Count unique SDK processes that handled messages
 # Each .txt file = one CLI subprocess. Multiple = concurrent queries.
@@ -46,7 +46,9 @@ ls -la data/sessions/<group>/.claude/debug/
 # Check parentUuid branching in transcript
 python3 -c "
 import json, sys
-lines = open('data/sessions/<group>/.claude/projects/-workspace-group/<session>.jsonl').read().strip().split('\n')
+# Note: OpenCode stores sessions differently from Claude Code.
+# Check the .opencode/ directory for session data.
+lines = open('data/sessions/<group>/.opencode/sessions/<session>.json').read().strip().split('\n')
 for i, line in enumerate(lines):
   try:
     d = json.loads(line)

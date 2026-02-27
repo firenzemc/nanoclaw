@@ -84,7 +84,7 @@ export class WhatsAppChannel implements Channel {
 
       if (qr) {
         const msg =
-          'WhatsApp authentication required. Run /setup in Claude Code.';
+          'WhatsApp authentication required. Run the setup script.';
         logger.error(msg);
         exec(
           `osascript -e 'display notification "${msg}" with title "NanoClaw" sound name "Basso"'`,

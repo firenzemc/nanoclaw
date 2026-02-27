@@ -124,7 +124,7 @@ export async function run(args: string[]): Promise<void> {
     recursive: true,
   });
 
-  // Update assistant name in CLAUDE.md files if different from default
+  // Update assistant name in context files (OPENCODE.md / CLAUDE.md) if different from default
   let nameUpdated = false;
   if (parsed.assistantName !== 'Andy') {
     logger.info(
@@ -133,6 +133,9 @@ export async function run(args: string[]): Promise<void> {
     );
 
     const mdFiles = [
+      path.join(projectRoot, 'groups', 'global', 'OPENCODE.md'),
+      path.join(projectRoot, 'groups', 'main', 'OPENCODE.md'),
+      // Backwards compatibility: also check CLAUDE.md
       path.join(projectRoot, 'groups', 'global', 'CLAUDE.md'),
       path.join(projectRoot, 'groups', 'main', 'CLAUDE.md'),
     ];
@@ -146,7 +149,7 @@ export async function run(args: string[]): Promise<void> {
           `You are ${parsed.assistantName}`,
         );
         fs.writeFileSync(mdFile, content);
-        logger.info({ file: mdFile }, 'Updated CLAUDE.md');
+        logger.info({ file: mdFile }, 'Updated context file');
       }
     }
 

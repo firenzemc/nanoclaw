@@ -73,26 +73,27 @@ describe('registered groups DB query', () => {
 });
 
 describe('credentials detection', () => {
+  const credentialPattern = /^(OPENAI_API_KEY|ANTHROPIC_API_KEY|GEMINI_API_KEY|GROQ_API_KEY|OPENROUTER_API_KEY|XAI_API_KEY)=/m;
+
   it('detects ANTHROPIC_API_KEY in env content', () => {
     const content =
       'SOME_KEY=value\nANTHROPIC_API_KEY=sk-ant-test123\nOTHER=foo';
-    const hasCredentials =
-      /^(CLAUDE_CODE_OAUTH_TOKEN|ANTHROPIC_API_KEY)=/m.test(content);
-    expect(hasCredentials).toBe(true);
+    expect(credentialPattern.test(content)).toBe(true);
   });
 
-  it('detects CLAUDE_CODE_OAUTH_TOKEN in env content', () => {
-    const content = 'CLAUDE_CODE_OAUTH_TOKEN=token123';
-    const hasCredentials =
-      /^(CLAUDE_CODE_OAUTH_TOKEN|ANTHROPIC_API_KEY)=/m.test(content);
-    expect(hasCredentials).toBe(true);
+  it('detects OPENAI_API_KEY in env content', () => {
+    const content = 'OPENAI_API_KEY=sk-test123';
+    expect(credentialPattern.test(content)).toBe(true);
+  });
+
+  it('detects GEMINI_API_KEY in env content', () => {
+    const content = 'GEMINI_API_KEY=test123';
+    expect(credentialPattern.test(content)).toBe(true);
   });
 
   it('returns false when no credentials', () => {
     const content = 'ASSISTANT_NAME="Andy"\nOTHER=foo';
-    const hasCredentials =
-      /^(CLAUDE_CODE_OAUTH_TOKEN|ANTHROPIC_API_KEY)=/m.test(content);
-    expect(hasCredentials).toBe(false);
+    expect(credentialPattern.test(content)).toBe(false);
   });
 });
 

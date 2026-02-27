@@ -42,11 +42,11 @@ private_key, .secret
 
 **Read-Only Project Root:**
 
-The main group's project root is mounted read-only. Writable paths the agent needs (group folder, IPC, `.claude/`) are mounted separately. This prevents the agent from modifying host application code (`src/`, `dist/`, `package.json`, etc.) which would bypass the sandbox entirely on next restart.
+The main group's project root is mounted read-only. Writable paths the agent needs (group folder, IPC, `.opencode/`) are mounted separately. This prevents the agent from modifying host application code (`src/`, `dist/`, `package.json`, etc.) which would bypass the sandbox entirely on next restart.
 
 ### 3. Session Isolation
 
-Each group has isolated Claude sessions at `data/sessions/{group}/.claude/`:
+Each group has isolated OpenCode sessions at `data/sessions/{group}/.opencode/`:
 - Groups cannot see other groups' conversation history
 - Session data includes full message history and file contents read
 - Prevents cross-group information disclosure
@@ -67,7 +67,7 @@ Messages and task operations are verified against group identity:
 ### 5. Credential Handling
 
 **Mounted Credentials:**
-- Claude auth tokens (filtered from `.env`, read-only)
+- AI provider API keys (filtered from `.env`, passed via stdin)
 
 **NOT Mounted:**
 - WhatsApp session (`store/auth/`) - host only
@@ -77,10 +77,13 @@ Messages and task operations are verified against group identity:
 **Credential Filtering:**
 Only these environment variables are exposed to containers:
 ```typescript
-const allowedVars = ['CLAUDE_CODE_OAUTH_TOKEN', 'ANTHROPIC_API_KEY'];
+const allowedVars = [
+  'OPENAI_API_KEY', 'ANTHROPIC_API_KEY', 'GEMINI_API_KEY',
+  'GROQ_API_KEY', 'OPENROUTER_API_KEY', 'XAI_API_KEY',
+];
 ```
 
-> **Note:** Anthropic credentials are mounted so that Claude Code can authenticate when the agent runs. However, this means the agent itself can discover these credentials via Bash or file operations. Ideally, Claude Code would authenticate without exposing credentials to the agent's execution environment, but I couldn't figure this out. **PRs welcome** if you have ideas for credential isolation.
+> **Note:** AI provider credentials are passed via stdin so that OpenCode can authenticate when the agent runs. However, the agent itself can discover these credentials via environment variables during execution. Secrets are stripped from Bash subprocess environments to mitigate this, but the OpenCode server process itself requires them.
 
 ## Privilege Comparison
 

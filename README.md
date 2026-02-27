@@ -7,70 +7,105 @@
 </p>
 
 <p align="center">
-  <a href="https://nanoclaw.dev">nanoclaw.dev</a>&nbsp; • &nbsp;
-  <a href="README_zh.md">中文</a>&nbsp; • &nbsp;
-  <a href="https://discord.gg/VDdww8qS42"><img src="https://img.shields.io/discord/1470188214710046894?label=Discord&logo=discord&v=2" alt="Discord" valign="middle"></a>&nbsp; • &nbsp;
-  <a href="repo-tokens"><img src="repo-tokens/badge.svg" alt="34.9k tokens, 17% of context window" valign="middle"></a>
+  <b>OpenCode Edition</b> — Provider-agnostic fork powered by <a href="https://opencode.ai">OpenCode</a> instead of Claude Code
 </p>
 
-Using Claude Code, NanoClaw can dynamically rewrite its code to customize its feature set for your needs.
+## What Changed (OpenCode Edition)
 
-**New:** First AI assistant to support [Agent Swarms](https://code.claude.com/docs/en/agent-teams). Spin up teams of agents that collaborate in your chat.
+This is a fork of [NanoClaw](https://github.com/qwibitai/nanoclaw) that replaces the Anthropic Claude Code dependency with [OpenCode](https://github.com/anomalyco/opencode) — a provider-agnostic AI coding agent.
 
-## Why I Built NanoClaw
+**Key differences from upstream:**
 
-[OpenClaw](https://github.com/openclaw/openclaw) is an impressive project, but I wouldn't have been able to sleep if I had given complex software I didn't understand full access to my life. OpenClaw has nearly half a million lines of code, 53 config files, and 70+ dependencies. Its security is at the application level (allowlists, pairing codes) rather than true OS-level isolation. Everything runs in one Node process with shared memory.
+| Aspect | Original NanoClaw | OpenCode Edition |
+|--------|------------------|------------------|
+| AI Engine | Claude Code (Anthropic-only) | OpenCode (any provider) |
+| SDK | `@anthropic-ai/claude-agent-sdk` | `@opencode-ai/sdk` |
+| API Keys | `ANTHROPIC_API_KEY` only | OpenAI, Gemini, Groq, Anthropic, OpenRouter, xAI, local models |
+| Container CLI | `@anthropic-ai/claude-code` | `opencode-ai` |
+| Context Files | `CLAUDE.md` only | `OPENCODE.md` (with `CLAUDE.md` fallback) |
+| Session Storage | `~/.claude/` | `~/.local/share/opencode/` |
 
-NanoClaw provides that same core functionality, but in a codebase small enough to understand: one process and a handful of files. Claude agents run in their own Linux containers with filesystem isolation, not merely behind permission checks.
+**Everything else is preserved:** container isolation, IPC mechanism, MCP tools, WhatsApp integration, scheduled tasks, group management, skills system, and the overall architecture.
 
 ## Quick Start
 
 ```bash
-git clone https://github.com/qwibitai/NanoClaw.git
-cd NanoClaw
-claude
+git clone <this-repo>
+cd nanoclaw-opencode
+
+# Configure your preferred AI provider
+cp .env.example .env
+# Edit .env and set at least one API key (e.g., OPENAI_API_KEY)
+
+npm install
+npm run build
+
+# Build the container image
+cd container && ./build.sh && cd ..
+
+npm start
 ```
 
-Then run `/setup`. Claude Code handles everything: dependencies, authentication, container setup and service configuration.
+## Supported AI Providers
+
+OpenCode supports multiple AI providers. Set the corresponding API key in your `.env` file:
+
+| Provider | Environment Variable | Example Models |
+|----------|---------------------|----------------|
+| OpenAI | `OPENAI_API_KEY` | gpt-4.1, gpt-4o, o3 |
+| Google Gemini | `GEMINI_API_KEY` | gemini-2.5-pro, gemini-2.5-flash |
+| Anthropic | `ANTHROPIC_API_KEY` | claude-sonnet-4, claude-haiku-3.5 |
+| Groq | `GROQ_API_KEY` | llama-4-maverick, qwen-qwq |
+| OpenRouter | `OPENROUTER_API_KEY` | Any model on OpenRouter |
+| xAI | `XAI_API_KEY` | grok-3 |
+| Local | (none needed) | Ollama, LM Studio, etc. |
+
+Configure your preferred model in `opencode.json` at the project root or per-group level.
+
+## Why This Fork
+
+The original NanoClaw is an excellent project with a clean architecture and strong security model. However, it is tightly coupled to Anthropic's Claude Code ecosystem. This fork decouples the AI engine, allowing you to:
+
+1. **Choose your provider** — Use OpenAI, Gemini, Groq, or any other supported model
+2. **Reduce costs** — Switch to cheaper models for simple tasks
+3. **Stay flexible** — Not locked into a single vendor's ecosystem
+4. **Use local models** — Run fully offline with Ollama or LM Studio
 
 ## Philosophy
 
-**Small enough to understand.** One process, a few source files and no microservices. If you want to understand the full NanoClaw codebase, just ask Claude Code to walk you through it.
+Inherited from the original NanoClaw:
 
-**Secure by isolation.** Agents run in Linux containers (Apple Container on macOS, or Docker) and they can only see what's explicitly mounted. Bash access is safe because commands run inside the container, not on your host.
+**Small enough to understand.** One process, a few source files and no microservices.
 
-**Built for the individual user.** NanoClaw isn't a monolithic framework; it's software that fits each user's exact needs. Instead of becoming bloatware, NanoClaw is designed to be bespoke. You make your own fork and have Claude Code modify it to match your needs.
+**Secure by isolation.** Agents run in Linux containers and they can only see what's explicitly mounted.
 
-**Customization = code changes.** No configuration sprawl. Want different behavior? Modify the code. The codebase is small enough that it's safe to make changes.
+**Built for the individual user.** NanoClaw is designed to be bespoke — make your own fork and modify it to match your needs.
 
-**AI-native.**
-- No installation wizard; Claude Code guides setup.
-- No monitoring dashboard; ask Claude what's happening.
-- No debugging tools; describe the problem and Claude fixes it.
+**Customization = code changes.** No configuration sprawl. Want different behavior? Modify the code.
 
-**Skills over features.** Instead of adding features (e.g. support for Telegram) to the codebase, contributors submit [claude code skills](https://code.claude.com/docs/en/skills) like `/add-telegram` that transform your fork. You end up with clean code that does exactly what you need.
+Added in this fork:
 
-**Best harness, best model.** NanoClaw runs on the Claude Agent SDK, which means you're running Claude Code directly. Claude Code is highly capable and its coding and problem-solving capabilities allow it to modify and expand NanoClaw and tailor it to each user.
+**Provider-agnostic.** Your AI assistant shouldn't lock you into a single vendor. Switch models with a config change, not a rewrite.
 
 ## What It Supports
 
 - **Messenger I/O** - Message NanoClaw from your phone. Supports WhatsApp, Telegram, Discord, Slack, Signal and headless operation.
-- **Isolated group context** - Each group has its own `CLAUDE.md` memory, isolated filesystem, and runs in its own container sandbox with only that filesystem mounted to it.
-- **Main channel** - Your private channel (self-chat) for admin control; every group is completely isolated
-- **Scheduled tasks** - Recurring jobs that run Claude and can message you back
+- **Isolated group context** - Each group has its own `OPENCODE.md` (or `CLAUDE.md`) memory, isolated filesystem, and runs in its own container sandbox.
+- **Main channel** - Your private channel for admin control; every group is completely isolated
+- **Scheduled tasks** - Recurring jobs that run the AI agent and can message you back
 - **Web access** - Search and fetch content from the Web
-- **Container isolation** - Agents are sandboxed in Apple Container (macOS) or Docker (macOS/Linux)
-- **Agent Swarms** - Spin up teams of specialized agents that collaborate on complex tasks. NanoClaw is the first personal AI assistant to support agent swarms.
-- **Optional integrations** - Add Gmail (`/add-gmail`) and more via skills
+- **Container isolation** - Agents are sandboxed in Docker (macOS/Linux) or Apple Container (macOS)
+- **MCP tools** - Full MCP (Model Context Protocol) support for extensible tool use
+- **Optional integrations** - Add Gmail and more via skills
 
 ## Usage
 
 Talk to your assistant with the trigger word (default: `@Andy`):
 
 ```
-@Andy send an overview of the sales pipeline every weekday morning at 9am (has access to my Obsidian vault folder)
+@Andy send an overview of the sales pipeline every weekday morning at 9am
 @Andy review the git history for the past week each Friday and update the README if there's drift
-@Andy every Monday at 8am, compile news on AI developments from Hacker News and TechCrunch and message me a briefing
+@Andy every Monday at 8am, compile news on AI developments and message me a briefing
 ```
 
 From the main channel (your self-chat), you can manage groups and tasks:
@@ -80,48 +115,10 @@ From the main channel (your self-chat), you can manage groups and tasks:
 @Andy join the Family Chat group
 ```
 
-## Customizing
-
-NanoClaw doesn't use configuration files. To make changes, just tell Claude Code what you want:
-
-- "Change the trigger word to @Bob"
-- "Remember in the future to make responses shorter and more direct"
-- "Add a custom greeting when I say good morning"
-- "Store conversation summaries weekly"
-
-Or run `/customize` for guided changes.
-
-The codebase is small enough that Claude can safely modify it.
-
-## Contributing
-
-**Don't add features. Add skills.**
-
-If you want to add Telegram support, don't create a PR that adds Telegram alongside WhatsApp. Instead, contribute a skill file (`.claude/skills/add-telegram/SKILL.md`) that teaches Claude Code how to transform a NanoClaw installation to use Telegram.
-
-Users then run `/add-telegram` on their fork and get clean code that does exactly what they need, not a bloated system trying to support every use case.
-
-### RFS (Request for Skills)
-
-Skills we'd like to see:
-
-**Communication Channels**
-- `/add-slack` - Add Slack
-
-**Session Management**
-- `/clear` - Add a `/clear` command that compacts the conversation (summarizes context while preserving critical information in the same session). Requires figuring out how to trigger compaction programmatically via the Claude Agent SDK.
-
-## Requirements
-
-- macOS or Linux
-- Node.js 20+
-- [Claude Code](https://claude.ai/download)
-- [Apple Container](https://github.com/apple/container) (macOS) or [Docker](https://docker.com/products/docker-desktop) (macOS/Linux)
-
 ## Architecture
 
 ```
-WhatsApp (baileys) --> SQLite --> Polling loop --> Container (Claude Agent SDK) --> Response
+WhatsApp (baileys) --> SQLite --> Polling loop --> Container (OpenCode SDK) --> Response
 ```
 
 Single Node.js process. Agents execute in isolated Linux containers with filesystem isolation. Only mounted directories are accessible. Per-group message queue with concurrency control. IPC via filesystem.
@@ -135,45 +132,38 @@ Key files:
 - `src/container-runner.ts` - Spawns streaming agent containers
 - `src/task-scheduler.ts` - Runs scheduled tasks
 - `src/db.ts` - SQLite operations (messages, groups, sessions, state)
-- `groups/*/CLAUDE.md` - Per-group memory
+- `container/agent-runner/src/index.ts` - Container-side agent using OpenCode SDK
+- `container/agent-runner/src/ipc-mcp-stdio.ts` - MCP server for IPC tools
+- `groups/*/OPENCODE.md` - Per-group memory (also reads `CLAUDE.md` for compatibility)
+
+## Requirements
+
+- macOS or Linux
+- Node.js 20+
+- [Docker](https://docker.com/products/docker-desktop) (macOS/Linux) or [Apple Container](https://github.com/apple/container) (macOS)
+- At least one AI provider API key
 
 ## FAQ
 
-**Why Docker?**
+**Why OpenCode instead of Claude Code?**
 
-Docker provides cross-platform support (macOS, Linux and even Windows via WSL2) and a mature ecosystem. On macOS, you can optionally switch to Apple Container via `/convert-to-apple-container` for a lighter-weight native runtime.
+OpenCode is provider-agnostic, open-source, and supports the same core capabilities (bash, file editing, web access, MCP). It lets you choose your AI provider instead of being locked into Anthropic.
 
-**Can I run this on Linux?**
+**Can I still use Claude/Anthropic?**
 
-Yes. Docker is the default runtime and works on both macOS and Linux. Just run `/setup`.
+Yes! OpenCode supports Anthropic as one of many providers. Set `ANTHROPIC_API_KEY` in your `.env` and configure the model in `opencode.json`.
 
-**Is this secure?**
+**Is this compatible with the original NanoClaw?**
 
-Agents run in containers, not behind application-level permission checks. They can only access explicitly mounted directories. You should still review what you're running, but the codebase is small enough that you actually can. See [docs/SECURITY.md](docs/SECURITY.md) for the full security model.
+The IPC protocol, MCP tools, container isolation, and overall architecture are identical. Context files (`CLAUDE.md`) are still supported for backwards compatibility. The main difference is the AI engine inside the container.
 
-**Why no configuration files?**
+**How do I switch models?**
 
-We don't want configuration sprawl. Every user should customize NanoClaw so that the code does exactly what they want, rather than configuring a generic system. If you prefer having config files, you can tell Claude to add them.
+Edit the `opencode.json` configuration file at the project root or per-group level. OpenCode supports model configuration per provider.
 
-**How do I debug issues?**
+## Contributing
 
-Ask Claude Code. "Why isn't the scheduler running?" "What's in the recent logs?" "Why did this message not get a response?" That's the AI-native approach that underlies NanoClaw.
-
-**Why isn't the setup working for me?**
-
-If you have issues, during setup, Claude will try to dynamically fix them. If that doesn't work, run `claude`, then run `/debug`. If Claude finds an issue that is likely affecting other users, open a PR to modify the setup SKILL.md.
-
-**What changes will be accepted into the codebase?**
-
-Only security fixes, bug fixes, and clear improvements will be accepted to the base configuration. That's all.
-
-Everything else (new capabilities, OS compatibility, hardware support, enhancements) should be contributed as skills.
-
-This keeps the base system minimal and lets every user customize their installation without inheriting features they don't want.
-
-## Community
-
-Questions? Ideas? [Join the Discord](https://discord.gg/VDdww8qS42).
+Follow the same philosophy as the original NanoClaw: contribute skills, not features.
 
 ## License
 
