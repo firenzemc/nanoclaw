@@ -91,6 +91,8 @@ npm start
 *   **网络访问** - 搜索和抓取网页内容。
 *   **容器隔离** - 智能体在 Docker (macOS/Linux) 或 Apple Container (macOS) 的沙箱中运行。
 *   **MCP 工具** - 完全支持 MCP (模型上下文协议)，实现可扩展的工具使用。
+*   **Twitter/X 数据** - 通过 6551 API 查询用户资料、推文、搜索、关注者、已删除推文和 KOL 关注者（OpenTwitter 技能）。
+*   **加密货币新闻** - 通过 6551 API 搜索加密新闻，含 AI 评级、交易信号和来源过滤（OpenNews 技能）。
 *   **可选集成** - 通过技能添加 Gmail (`/add-gmail`) 等更多功能。
 
 ## 使用方法

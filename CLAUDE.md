@@ -19,7 +19,9 @@ Single Node.js process that connects to WhatsApp, routes messages to Claude Agen
 | `src/task-scheduler.ts` | Runs scheduled tasks |
 | `src/db.ts` | SQLite operations |
 | `groups/{name}/CLAUDE.md` | Per-group memory (isolated) |
-| `container/skills/agent-browser.md` | Browser automation tool (available to all agents via Bash) |
+| `container/skills/agent-browser/SKILL.md` | Browser automation tool (available to all agents via Bash) |
+| `container/skills/opentwitter/SKILL.md` | Twitter/X data queries via 6551 API (user profiles, search, followers, deleted tweets, KOL) |
+| `container/skills/opennews/SKILL.md` | Crypto news search with AI ratings and trading signals via 6551 API |
 
 ## Skills
 
@@ -31,6 +33,8 @@ Single Node.js process that connects to WhatsApp, routes messages to Claude Agen
 | `/update` | Pull upstream NanoClaw changes, merge with customizations, run migrations |
 | `/qodo-pr-resolver` | Fetch and fix Qodo PR review issues interactively or in batch |
 | `/get-qodo-rules` | Load org- and repo-level coding rules from Qodo before code tasks |
+| `/opentwitter` | Query Twitter/X data — user profiles, tweets, search, followers, deleted tweets, KOL followers |
+| `/opennews` | Crypto news search with AI ratings, trading signals, and source filtering |
 
 ## Development
 

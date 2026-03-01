@@ -190,6 +190,9 @@ function readSecrets(): Record<string, string> {
     'GROQ_API_KEY',
     'OPENROUTER_API_KEY',
     'XAI_API_KEY',
+    // 6551 API tokens for OpenTwitter and OpenNews skills
+    'TWITTER_TOKEN',
+    'OPENNEWS_TOKEN',
   ]);
 }
 

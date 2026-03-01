@@ -9,12 +9,13 @@ This is the NanoClaw project, a WhatsApp-connected AI assistant powered by OpenC
 - **IPC**: Host ↔ container communication via JSON files in mounted directories
 - **MCP server** (`container/agent-runner/src/ipc-mcp-stdio.ts`): Provides nanoclaw-specific tools (send_message, schedule_task, etc.)
 
-## Key Files
-
+## Key files:
 - `src/index.ts` — Main entry point, WhatsApp connection
 - `src/container-runner.ts` — Spawns and manages container agents
 - `container/agent-runner/src/index.ts` — Container-side agent using OpenCode SDK
 - `container/agent-runner/src/ipc-mcp-stdio.ts` — MCP server for IPC tools
+- `container/skills/opentwitter/SKILL.md` — Twitter/X data queries via 6551 API
+- `container/skills/opennews/SKILL.md` — Crypto news search via 6551 API
 
 ## Development
 

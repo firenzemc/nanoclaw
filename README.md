@@ -96,6 +96,8 @@ Added in this fork:
 - **Web access** - Search and fetch content from the Web
 - **Container isolation** - Agents are sandboxed in Docker (macOS/Linux) or Apple Container (macOS)
 - **MCP tools** - Full MCP (Model Context Protocol) support for extensible tool use
+- **Twitter/X data** - Query user profiles, tweets, search, followers, deleted tweets, and KOL followers via the 6551 API (OpenTwitter skill)
+- **Crypto news** - Search crypto news with AI ratings, trading signals, and source filtering via the 6551 API (OpenNews skill)
 - **Optional integrations** - Add Gmail and more via skills
 
 ## Usage
